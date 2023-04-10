@@ -25,7 +25,18 @@ class SAMWidget(Container):
         super().__init__()
         self._viewer = viewer
 
-        self._device = "cuda" if torch.cuda.is_available() else "cpu"
+        
+        if torch.cuda.is_available():
+            self._device = "cuda"
+        elif (
+            hasattr(torch.backends, "mps")
+            and torch.backends.mps.is_available()
+        ):
+            self._device = "mps"
+        else:
+            self._device = "cpu"
+
+        print(f"Selecting torch device: {self._device}")
 
         self._model_type_widget = ComboBox(
             value=model_type,
